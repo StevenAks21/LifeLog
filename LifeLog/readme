@@ -1,7 +1,11 @@
 features: 
 
-/login: POST (returns JWT)
+/login: POST (returns JWT) ✓
+
 /upload: POST (multipart file upload)
+
 /transcode: POST (takes file ID and resolution)
+
 /download/:id: GET (returns transcoded file)
+
 /videos: GET (returns list of user’s files, with filtering/pagination)
