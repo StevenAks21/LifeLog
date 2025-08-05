@@ -12,7 +12,7 @@ const requireAuth = (req, res, next) => {
     try {
         const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET)
         req.username = decoded.username
-        req.id = decoded.id
+        req.userid = decoded.id
         next()
     }
     catch {

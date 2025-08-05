@@ -6,7 +6,10 @@ var logger = require('morgan');
 const cors = require(`cors`)
 require(`dotenv`).config()
 var app = express();
+
+// import routes
 const loginRoute = require(`./routes/login`)
+const uploadRoute = require(`./routes/upload`)
 
 
 // view engine setup
@@ -15,6 +18,7 @@ app.set('view engine', 'jade');
 
 // Setup routes
 app.use(`/login`, loginRoute)
+app.use(`/upload`, uploadRoute)
 
 app.use(logger('dev'));
 app.use(cors())

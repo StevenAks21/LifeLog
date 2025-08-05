@@ -43,7 +43,7 @@ router.post(`/`, (req, res) => {
 })
 
 router.get(`/me`, requireAuth, (req, res, next) =>{
-    return res.status(200).json({id: req.id ,username: req.username})
+    return res.status(200).json({id: req.userid ,username: req.username})
 })
 
 
