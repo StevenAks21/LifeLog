@@ -3,14 +3,21 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const cors = require(`cors`)
+require(`dotenv`).config()
 var app = express();
+const loginRoute = require(`./routes/login`)
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+// Setup routes
+app.use(`/login`, loginRoute)
+
 app.use(logger('dev'));
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -37,7 +44,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-
-app.listen(3000)
+const port = process.env.PORT
+app.listen(port)
 
 module.exports = app;
