@@ -10,8 +10,10 @@ const users = [
     { id: 2, username: `alex`, password: `123` }
 ]
 
-function signToken(payLoad) {
-    return jsonwebtoken.sign(payLoad, process.env.JWT_SECRET, { expiresIn: `1h` })
+function signToken(user) {
+
+    payload = {id: user.id, username: user.username}
+    return jsonwebtoken.sign(payload, process.env.JWT_SECRET, { expiresIn: `1h` })
 }
 
 
