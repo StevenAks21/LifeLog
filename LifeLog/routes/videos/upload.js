@@ -1,12 +1,12 @@
 const express = require(`express`)
-const requireAuth = require(`../middleware/requireAuth`)
+const requireAuth = require(`../../middleware/requireAuth`)
 const path = require(`path`)
 const multer = require(`multer`)
 const fs = require(`fs`)
 const router = express.Router()
 
 // Create upload path pathname
-const uploadPath = path.join(__dirname, `..`, `uploads`)
+const uploadPath = path.join(__dirname, `../..`, `uploads`)
 
 
 // Check if path exists
