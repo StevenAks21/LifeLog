@@ -9,7 +9,8 @@ var app = express();
 
 // import routes
 const loginRoute = require(`./routes/login`)
-const uploadRoute = require(`./routes/upload`)
+const uploadRoute = require(`./routes/videos/upload`)
+const xRoute = require (`./routes/videos/getVideos`)
 
 
 // view engine setup
@@ -18,7 +19,8 @@ app.set('view engine', 'jade');
 
 // Setup routes
 app.use(`/login`, loginRoute)
-app.use(`/upload`, uploadRoute)
+app.use(`/videos`, uploadRoute)
+app.use(`/videos`, xRoute)
 
 app.use(logger('dev'));
 app.use(cors())

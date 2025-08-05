@@ -1,12 +1,12 @@
 const express = require(`express`)
-const requireAuth = require(`../middleware/requireAuth`)
+const requireAuth = require(`../../middleware/requireAuth`)
 const path = require(`path`)
 const multer = require(`multer`)
 const fs = require(`fs`)
 const router = express.Router()
 
 // Create upload path pathname
-const uploadPath = path.join(__dirname, `..`, `uploads`)
+const uploadPath = path.join(__dirname, `../..`, `uploads`)
 
 
 // Check if path exists
@@ -36,13 +36,17 @@ const upload = multer({
 })
 
 
-router.post(`/`, requireAuth, upload.any(), (req, res) => {
-    if(!req.files){
-        return res.status(400).json({error: true, message: `no file was uploaded`})
+router.get(`/`, requireAuth, (req, res) => {
+    res.status(200).json({ hi: `hi` })
+})
+
+router.post(`/upload`, requireAuth, upload.any(), (req, res) => {
+    if (!req.files) {
+        return res.status(400).json({ error: true, message: `no file was uploaded` })
     }
 
     return res.status(200).json({
-        error: false, message : `successfully uploaded`
+        error: false, message: `successfully uploaded`
     })
 })
 
