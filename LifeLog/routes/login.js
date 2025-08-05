@@ -1,5 +1,6 @@
 const jsonwebtoken = require(`jsonwebtoken`)
 const express = require(`express`)
+const requireAuth = require(`../middleware/requireAuth`)
 
 const router = express.Router()
 
@@ -41,6 +42,9 @@ router.post(`/`, (req, res) => {
     return res.status(200).json({error: false, token : token, expiresIn : `3600`})
 })
 
+router.get(`/me`, requireAuth, (req, res, next) =>{
+    return res.status(200).json({id: req.id ,username: req.username})
+})
 
 
 
