@@ -2,7 +2,7 @@ features:
 
 /login: POST (returns JWT) ✓
 
-/upload: POST (multipart file upload)
+/upload: POST (multipart file upload) ✓
 
 /transcode: POST (takes file ID and resolution)
 
