@@ -35,11 +35,6 @@ const upload = multer({
     }
 })
 
-
-router.get(`/`, requireAuth, (req, res) => {
-    res.status(200).json({ hi: `hi` })
-})
-
 router.post(`/upload`, requireAuth, upload.any(), (req, res) => {
     if (!req.files) {
         return res.status(400).json({ error: true, message: `no file was uploaded` })

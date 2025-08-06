@@ -10,7 +10,7 @@ var app = express();
 // import routes
 const loginRoute = require(`./routes/login`)
 const uploadRoute = require(`./routes/videos/upload`)
-const xRoute = require (`./routes/videos/getVideos`)
+const videoRoute = require (`./routes/videos/getVideos`)
 
 
 // view engine setup
@@ -20,7 +20,7 @@ app.set('view engine', 'jade');
 // Setup routes
 app.use(`/login`, loginRoute)
 app.use(`/videos`, uploadRoute)
-app.use(`/videos`, xRoute)
+app.use(`/videos`, videoRoute)
 
 app.use(logger('dev'));
 app.use(cors())
@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.get('/', (req, res) => {
-  res.status(200).json({hi:'hi'})
+  res.status(200).json({hi:'hello from main'})
 })
 
 // catch 404 and forward to error handler
