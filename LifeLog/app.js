@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.get('/', (req, res) => {
-  res.status(200).json({hi:'hi'})
+  res.status(200).json({hi:'hello from main'})
 })
 
 // catch 404 and forward to error handler
