@@ -16,10 +16,11 @@ if (!fs.existsSync(uploadPath)) {
 // Sets up storage with uploadPath as path to store video and a unique suffix
 const storage = multer.diskStorage({
     destination: uploadPath, filename: function (req, file, cb) {
-        const ext = path.extname(file.originalname) || ``
-        const timeNow = new Date(Date.now())
-        const suffix = timeNow + `-` + req.userid + '-' + req.username
-        cb(null, file.fieldname + `-` + suffix + ext)
+        const extension = path.extname(file.originalname) || ``
+        const fileName = file.originalname
+        const timeNow = new Date(Date.now()).toISOString()
+        const videoName = req.userid + `-` + fileName + `_` + timeNow
+        cb(null, videoName + extension)
     }
 })
 
@@ -39,7 +40,7 @@ router.post(`/upload`, requireAuth, upload.any(), (req, res) => {
     if (!req.files) {
         return res.status(400).json({ error: true, message: `no file was uploaded` })
     }
-
+    
     return res.status(200).json({
         error: false, message: `successfully uploaded`
     })

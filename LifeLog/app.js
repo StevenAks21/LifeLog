@@ -10,7 +10,7 @@ var app = express();
 // import routes
 const loginRoute = require(`./routes/login`)
 const uploadRoute = require(`./routes/videos/upload`)
-const videoRoute = require (`./routes/videos/getVideos`)
+const videoRoute = require (`./routes/videos/videos`)
 
 
 // view engine setup
