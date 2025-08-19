@@ -1,0 +1,15 @@
+# Dockerfile
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+# install only what package.json says (use npm ci if you have package-lock.json)
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# copy the rest
+COPY . .
+
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "app.js"]
