@@ -4,7 +4,6 @@ services:
     build: .
     container_name: lifelog-app
     environment:
-      # these match what your pool reads
       DB_HOST: db
       DB_PORT: 3306
       DB_USER: appuser
