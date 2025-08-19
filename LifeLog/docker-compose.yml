@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 services:
   app:
     build: .
@@ -6,10 +6,21 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=rootpass
+      - DB_NAME=lifelog
+      - DB_PORT=3306
+
   db:
     image: mysql:8.0
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: appdb
-    ports:
-      - "3306:3306"
+      MYSQL_DATABASE: lifelog
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

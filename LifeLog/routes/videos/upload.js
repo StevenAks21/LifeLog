@@ -42,11 +42,33 @@ router.post(`/upload`, requireAuth, upload.any(), async (req, res) => {
         return res.status(400).json({ error: true, message: `no file was uploaded` })
     }
     else {
-        const [rows] = await pool.query(`SELECT 1+1 AS result`);
-        console.log(`query result is ${rows[0].result}`)
-        return res.status(200).json({
-            error: false, message: `successfully uploaded`
-        })
+        try {
+            const file = Array.isArray(req.files) && req.files.length ? req.files[0] : null;
+            if (!file) {
+                return res.status(400).json({ error: true, message: 'no file found in request' });
+            }
+
+            const originalName = file.originalname;
+            const storedName   = path.basename(file.path); 
+            const sizeBytes    = file.size;
+            const userId       = req.userid; 
+
+            const [result] = await pool.execute(
+                `INSERT INTO videos (user_id, original_name, stored_name, size_bytes)
+                 VALUES (?, ?, ?, ?)`,
+                [userId, originalName, storedName, sizeBytes]
+            );
+
+            return res.status(201).json({
+                error: false,
+                message: 'successfully uploaded',
+                video_id: result.insertId,
+                data: { user_id: userId, original_name: originalName, stored_name: storedName, size_bytes: sizeBytes }
+            });
+        } catch (e) {
+            console.error('insert metadata failed:', e);
+            return res.status(500).json({ error: true, message: 'database error', details: e.code || e.message });
+        }
     }
 })
 
