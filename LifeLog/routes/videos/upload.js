@@ -4,6 +4,7 @@ const path = require(`path`)
 const multer = require(`multer`)
 const fs = require(`fs`)
 const router = express.Router()
+const { pool } = require(`../../db/pool`)
 
 // Create upload path pathname
 const uploadPath = path.join(__dirname, `../..`, `uploads`)
@@ -36,14 +37,17 @@ const upload = multer({
     }
 })
 
-router.post(`/upload`, requireAuth, upload.any(), (req, res) => {
+router.post(`/upload`, requireAuth, upload.any(), async (req, res) => {
     if (!req.files) {
         return res.status(400).json({ error: true, message: `no file was uploaded` })
     }
-    
-    return res.status(200).json({
-        error: false, message: `successfully uploaded`
-    })
+    else {
+        const [rows] = await pool.query(`SELECT 1+1 AS result`);
+        console.log(`query result is ${rows[0].result}`)
+        return res.status(200).json({
+            error: false, message: `successfully uploaded`
+        })
+    }
 })
 
 module.exports = router
