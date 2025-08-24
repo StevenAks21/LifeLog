@@ -17,17 +17,18 @@ const videoRoute = require (`./routes/videos/videos`)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-// Setup routes
-app.use(`/login`, loginRoute)
-app.use(`/videos`, uploadRoute)
-app.use(`/videos`, videoRoute)
-
 app.use(logger('dev'));
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+// Setup routes
+app.use(`/login`, loginRoute)
+app.use(`/videos`, uploadRoute)
+app.use(`/videos`, videoRoute)
 
 
 app.get('/', (req, res) => {
