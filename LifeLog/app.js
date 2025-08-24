@@ -11,6 +11,7 @@ var app = express();
 const loginRoute = require(`./routes/login`)
 const uploadRoute = require(`./routes/videos/upload`)
 const videoRoute = require (`./routes/videos/videos`)
+const transcodeRoute = require(`./routes/videos/transcode`)
 
 
 // view engine setup
@@ -29,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(`/login`, loginRoute)
 app.use(`/videos`, uploadRoute)
 app.use(`/videos`, videoRoute)
+app.use(`/videos`, transcodeRoute)
 
 
 app.get('/', (req, res) => {
