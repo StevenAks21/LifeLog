@@ -54,6 +54,6 @@ app.use(function(err, req, res, next) {
 });
 
 const port = process.env.PORT
-app.listen(port)
+const server = app.listen(port)
 
 module.exports = app;

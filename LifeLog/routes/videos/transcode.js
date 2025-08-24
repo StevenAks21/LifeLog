@@ -1,15 +1,63 @@
 const express = require(`express`)
-const app = express.Router()
+const router = express.Router()
 const path = require(`path`)
 const fs = require(`fs/promises`)
+const { spawn } = require(`child_process`)
 const requireAuth = require(`../../middleware/requireAuth`)
-const { pool } = require (`../../db/pool`)
+const { pool } = require(`../../db/pool`)
+const uploadPath = path.join(__dirname, `../../uploads`)
 
 
 
-app.get(`/transcode/:id`, requireAuth, async (req, res) => {
-    res.status(200).json({error: `hello from transcode`})
+function runCommand(command, args) {
+    const child = spawn(command, args, { detached: true, stdio: 'ignore' });
+    child.unref();
+}
+
+router.get(`/transcode/:id`, requireAuth, async (req, res) => {
+    const userId = req.userid
+    const videoId = req.params.id
+    const [selectQueryResults] = await pool.execute(`SELECT * FROM VIDEOS WHERE user_id = ? AND id = ?`, [userId, videoId])
+    if (selectQueryResults.length == 0) {
+        return res.status(404).json({ error: true, message: `Video with id ${videoId} was not found to be associated with user id ${userId}` })
+    }
+
+    const storedName = selectQueryResults[0].stored_name
+    const storedPath = path.join(uploadPath, storedName)
+
+    const baseName = path.basename(storedName, path.extname(storedName))
+    const newName = `${baseName}-transcoded` + path.extname(storedName)
+    const newPath = path.join(uploadPath, newName)
+
+    try {
+        await runCommand('ffmpeg', [
+            '-hide_banner', '-y',
+            '-i', storedPath,
+            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20',
+            '-c:a', 'aac', '-b:a', '128k',
+            '-movflags', '+faststart',
+            newPath
+        ]);
+
+        await pool.execute(
+            `INSERT INTO VIDEOS (user_id, original_name, stored_name, size_bytes)
+             VALUES (?, ?, ?, ?)`,
+            [
+                userId,
+                selectQueryResults[0].original_name, 
+                newName,
+                selectQueryResults[0].size_bytes
+            ]
+        )
+
+        return res.status(200).json({ error: false, message: `Transcode started`, outputName: newName })
+    }
+
+    catch (e) {
+        return res.status(500).json({ error: true, message: `error transcoding` })
+    }
+
 })
 
 
-module.exports = app
+module.exports = router
