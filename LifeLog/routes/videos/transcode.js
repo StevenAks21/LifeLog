@@ -17,7 +17,7 @@ function runCommand(command, args) {
 router.get(`/transcode/:id`, requireAuth, async (req, res) => {
     const userId = req.userid
     const videoId = req.params.id
-    const [selectQueryResults] = await pool.execute(`SELECT * FROM VIDEOS WHERE user_id = ? AND id = ?`, [userId, videoId])
+    const [selectQueryResults] = await pool.execute(`SELECT * FROM videos WHERE user_id = ? AND id = ?`, [userId, videoId])
     if (selectQueryResults.length == 0) {
         return res.status(404).json({ error: true, message: `Video with id ${videoId} was not found to be associated with user id ${userId}` })
     }
@@ -42,7 +42,7 @@ router.get(`/transcode/:id`, requireAuth, async (req, res) => {
         ]);
 
         await pool.execute(
-            `INSERT INTO VIDEOS (user_id, original_name, stored_name, size_bytes)
+            `INSERT INTO videos (user_id, original_name, stored_name, size_bytes)
              VALUES (?, ?, ?, ?)`,
             [
                 userId,
