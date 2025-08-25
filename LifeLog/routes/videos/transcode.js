@@ -33,8 +33,8 @@ router.get(`/transcode/:id`, requireAuth, async (req, res) => {
         await runCommand('ffmpeg', [
             '-hide_banner', '-y',
             '-i', storedPath,
-            `-vf`, `scale=2560:1440`,
-            '-c:v', 'libx264', '-preset', 'slow', '-crf', '16',
+            `-vf`, `scale=1920:1080`,
+            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18',
             '-c:a', 'aac', '-b:a', '128k',
             '-movflags', '+faststart',
             `-threads`, `0`,
