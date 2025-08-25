@@ -34,7 +34,7 @@ router.get(`/transcode/:id`, requireAuth, async (req, res) => {
             '-hide_banner', '-y',
             '-i', storedPath,
             `-vf`, `scale=1920:1080`,
-            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18',
+            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20',
             '-c:a', 'aac', '-b:a', '128k',
             '-movflags', '+faststart',
             `-threads`, `0`,
