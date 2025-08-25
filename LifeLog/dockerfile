@@ -1,29 +1,15 @@
-# Stage 1: Build Node app
-FROM node:20-alpine AS app
+# app/Dockerfile
+FROM node:20-alpine
 WORKDIR /usr/src/app
-RUN apk add --no-cache ffmpeg mysql-client
+
+# ffmpeg for your transcode route
+RUN apk add --no-cache ffmpeg
+
 COPY package*.json ./
 RUN npm ci --omit=dev
+
 COPY . .
+ENV PORT=3000
+EXPOSE 3000
 
-
-FROM mysql:8.0
-
-
-COPY db/init/schema.sql /docker-entrypoint-initdb.d/
-
-
-COPY --from=app /usr/src/app /app
-
-WORKDIR /app
-ENV PORT=3000 \
-    DB_HOST=localhost \
-    DB_PORT=3306 \
-    DB_USER=appuser \
-    DB_PASS=apppass \
-    DB_NAME=lifelog
-
-EXPOSE 3000 3306
-
-
-CMD mysqld_safe & sleep 20 && node app.js
+CMD ["node", "app.js"]
