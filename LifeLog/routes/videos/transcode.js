@@ -14,7 +14,7 @@ function runCommand(command, args) {
     child.unref();
 }
 
-router.get(`/transcode/:id`, requireAuth, async (req, res) => {
+router.post(`/transcode/:id`, requireAuth, async (req, res) => {
     const userId = req.userid
     const videoId = req.params.id
     const [selectQueryResults] = await pool.execute(`SELECT * FROM videos WHERE user_id = ? AND id = ?`, [userId, videoId])
