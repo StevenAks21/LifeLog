@@ -4,8 +4,6 @@ const path = require(`path`)
 const fs = require(`fs/promises`)
 const requireAuth = require(`../../middleware/requireAuth`)
 const { pool } = require(`../../db/pool`)
-const video = require("ffmpeg/lib/video")
-const { timeStamp } = require("console")
 const dir = path.join(__dirname, `../../uploads`)
 
 
