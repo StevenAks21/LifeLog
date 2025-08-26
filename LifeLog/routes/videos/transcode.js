@@ -5,7 +5,6 @@ const { spawn } = require(`child_process`)
 const requireAuth = require(`../../middleware/requireAuth`)
 const { pool } = require(`../../db/pool`)
 const uploadPath = path.join(__dirname, `../../uploads`)
-const fs = require(`fs/promises`)
 
 
 function runCommand(command, args) {
