@@ -79,19 +79,23 @@ app.get(`/getdescription/:id`, requireAuth, async (req, res) => {
     const data = await response.json()
     const description = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No description generated'
 
+    const jsonFile = {
+        userId,
+        videoId,
+        title,
+        description,
+        timeStamp: new Date().toISOString()
+    }
 
     const filePath = path.join(dir, `${videoId}-description.json`)
-    await fs.writeFile(filePath, JSON.stringify(
-        {
-            userId,
-            videoId,
-            title,
-            description,
-            timeStamp: new Date().toISOString()
-        }, null, 1
-    ))
-    return res.status(200).json({ userId, videoId, description })
+    await fs.writeFile(filePath, JSON.stringify(jsonFile, null, 2))
 
+    return res.status(200).json({
+        error: false,
+        message: 'Description generated successfully',
+        description,
+        jsonFile
+    })
 })
 
 app.delete(`/delete/all`, requireAuth, async (req, res) => {
