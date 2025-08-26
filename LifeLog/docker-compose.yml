@@ -1,5 +1,23 @@
-version: "3.9"
 services:
+  db:
+    image: mysql:8.0
+    container_name: lifelog-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: lifelog
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-papppass", "-u", "appuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   app:
     build: .
     container_name: lifelog-app
@@ -10,27 +28,16 @@ services:
       DB_PASS: apppass
       DB_NAME: lifelog
       PORT: 3000
-      GEMINI_API_KEY: AIzaSyAMO_OyLp1BInE0jpdS03yrQBIxzivwAHM
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
-      - ./uploads:/usr/src/app/uploads  
-
-  db:
-    image: mysql:8.0
-    container_name: lifelog-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: lifelog
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: apppass
-    ports:
-      - "3306:3306"                    
-    volumes:
-      - mysqldata:/var/lib/mysql       
-      - ./db/init:/docker-entrypoint-initdb.d:ro 
+      - ./uploads:/usr/src/app/uploads
+    restart: unless-stopped
 
 volumes:
   mysqldata:
