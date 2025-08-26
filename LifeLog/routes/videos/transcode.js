@@ -37,6 +37,7 @@ router.post(`/transcode/:id`, requireAuth, async (req, res) => {
             '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23',
             '-c:a', 'aac', '-b:a', '128k',
             '-movflags', '+faststart',
+            `-threads`, `2`,
             newPath
         ]);
 
