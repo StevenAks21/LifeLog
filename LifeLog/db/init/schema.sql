@@ -9,3 +9,13 @@ CREATE TABLE IF NOT EXISTS videos (
   INDEX idx_videos_user (user_id),
   INDEX idx_videos_uploaded (uploaded_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS thumbnails (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    video_id BIGINT UNSIGNED NOT NULL,
+    path VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE CASCADE,
+    INDEX idx_thumbnails_video (video_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

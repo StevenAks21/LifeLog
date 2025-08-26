@@ -1,12 +1,11 @@
 const express = require(`express`)
 const router = express.Router()
 const path = require(`path`)
-const fs = require(`fs/promises`)
 const { spawn } = require(`child_process`)
 const requireAuth = require(`../../middleware/requireAuth`)
 const { pool } = require(`../../db/pool`)
 const uploadPath = path.join(__dirname, `../../uploads`)
-
+const fs = require(`fs/promises`)
 
 
 function runCommand(command, args) {
@@ -29,8 +28,10 @@ router.post(`/transcode/:id`, requireAuth, async (req, res) => {
     const newName = `${baseName}-transcoded` + path.extname(storedName)
     const newPath = path.join(uploadPath, newName)
 
+
+
     try {
-        await runCommand('ffmpeg', [
+        runCommand('ffmpeg', [
             '-hide_banner', '-y',
             '-i', storedPath,
             `-vf`, `scale=1280:720`,
@@ -41,22 +42,35 @@ router.post(`/transcode/:id`, requireAuth, async (req, res) => {
             newPath
         ]);
 
-        await pool.execute(
+        const [insertQueryResult] = await pool.execute(
             `INSERT INTO videos (user_id, original_name, stored_name, size_bytes)
-             VALUES (?, ?, ?, ?)`,
-            [
-                userId,
-                selectQueryResults[0].original_name, 
-                newName,
-                selectQueryResults[0].size_bytes
-            ]
-        )
+   VALUES (?, ?, ?, ?)`,
+            [userId, selectQueryResults[0].original_name, newName, selectQueryResults[0].size_bytes]
+        );
+
+
+        const newVideoId = insertQueryResult.insertId;
+
+        const thumbName = `${baseName}-thumb.jpg`
+        const thumbPath = path.join(uploadPath, thumbName)
+
+        runCommand('ffmpeg', [
+            '-i', storedPath,
+            '-ss', '00:00:01.000',
+            '-vframes', '1',
+            thumbPath
+        ])
+
+        await pool.execute(
+            `INSERT INTO thumbnails (video_id, path) VALUES (?, ?)`,
+            [newVideoId, thumbName]
+        );
 
         return res.status(200).json({ error: false, message: `Transcode started`, outputName: newName })
     }
 
     catch (e) {
-        return res.status(500).json({ error: true, message: `error transcoding` })
+        return res.status(500).json({ error: true, message: `error transcoding ${e.message}` })
     }
 
 })

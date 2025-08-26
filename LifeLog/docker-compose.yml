@@ -10,6 +10,7 @@ services:
       DB_PASS: apppass
       DB_NAME: lifelog
       PORT: 3000
+      GEMINI_API_KEY: AIzaSyAMO_OyLp1BInE0jpdS03yrQBIxzivwAHM
     ports:
       - "3000:3000"
     depends_on:

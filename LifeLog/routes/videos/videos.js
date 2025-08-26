@@ -4,6 +4,8 @@ const path = require(`path`)
 const fs = require(`fs/promises`)
 const requireAuth = require(`../../middleware/requireAuth`)
 const { pool } = require(`../../db/pool`)
+const video = require("ffmpeg/lib/video")
+const { timeStamp } = require("console")
 const dir = path.join(__dirname, `../../uploads`)
 
 
@@ -37,8 +39,59 @@ app.get(`/`, requireAuth, async (req, res) => {
         pageSize: results.length,
         sort,
         order,
-        results
+        results,
     })
+})
+
+app.get(`/getdescription/:id`, requireAuth, async (req, res) => {
+    const userId = req.userid
+    const videoId = req.params.id
+
+    const [result] = await pool.execute(`SELECT * FROM videos WHERE user_id = ? AND id = ?`, [userId, videoId])
+
+
+    if (result.length == 0) {
+        return res.status(404).json({ error: true, message: `Video with id ${videoId} was not found or is not associated with user id ${userId}` })
+    }
+
+    const title = result[0].original_name
+    console.log(title)
+    console.log(process.env.GEMINI_API_KEY)
+    const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        parts: [
+                            {
+                                text: `Write a description for this video title: "${title}". If the title is unclear, say that it is unclear. make it 2 paragraphs long`
+                            }
+                        ]
+                    }
+                ]
+            })
+        }
+    )
+
+    const data = await response.json()
+    const description = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No description generated'
+
+
+    const filePath = path.join(dir, `${videoId}-description.json`)
+    await fs.writeFile(filePath, JSON.stringify(
+        {
+            userId,
+            videoId,
+            title,
+            description,
+            timeStamp: new Date().toISOString()
+        }, null, 1
+    ))
+    return res.status(200).json({ userId, videoId, description })
+
 })
 
 app.delete(`/delete/all`, requireAuth, async (req, res) => {
@@ -51,6 +104,7 @@ app.delete(`/delete/all`, requireAuth, async (req, res) => {
     }
 
     const [deleteQueryResult] = await pool.execute(`DELETE FROM videos WHERE user_id = ?`, [userId])
+
     const affectedRows = deleteQueryResult.affectedRows
 
     for (let i = 0; i < resultLength; i++) {
