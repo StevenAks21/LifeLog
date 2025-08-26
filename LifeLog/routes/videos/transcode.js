@@ -34,7 +34,7 @@ router.post(`/transcode/:id`, requireAuth, async (req, res) => {
             '-hide_banner', '-y',
             '-i', storedPath,
             `-vf`, `scale=1280:720`,
-            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23',
+            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21',
             '-c:a', 'aac', '-b:a', '128k',
             '-movflags', '+faststart',
             newPath
